@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <limits.h>
 
+#include <spa/support/plugin.h>
 #include <spa/support/cpu.h>
 #include <spa/support/log.h>
 #include <spa/utils/list.h>
@@ -49,7 +50,8 @@
 #define DEFAULT_CHANNELS	2
 #define DEFAULT_MASK		(1LL << SPA_AUDIO_CHANNEL_FL) | (1LL << SPA_AUDIO_CHANNEL_FR)
 
-#define MAX_SAMPLES	2048
+#define MAX_SAMPLES	8192
+#define MAX_ALIGN	16
 #define MAX_BUFFERS	64
 #define MAX_DATAS	32
 #define MAX_PORTS	128
@@ -112,7 +114,7 @@ struct impl {
 
 	bool have_profile;
 
-	float empty[MAX_SAMPLES + 15];
+	float empty[MAX_SAMPLES*2 + MAX_ALIGN];
 };
 
 #define CHECK_OUT_PORT(this,d,p)	((d) == SPA_DIRECTION_OUTPUT && (p) < this->port_count)
@@ -256,7 +258,7 @@ static int impl_node_set_param(void *object, uint32_t id, uint32_t flags,
 				SPA_PARAM_PORT_CONFIG_format,		SPA_POD_Pod(&format)) < 0)
 			return -EINVAL;
 
-		if (!SPA_POD_IS_OBJECT_TYPE(format, SPA_TYPE_OBJECT_Format))
+		if (!spa_pod_is_object_type(format, SPA_TYPE_OBJECT_Format))
 			return -EINVAL;
 
 		if (mode != SPA_PARAM_PORT_CONFIG_MODE_dsp)
@@ -473,7 +475,7 @@ impl_node_port_enum_params(void *object, int seq,
 			SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(1, 1, MAX_BUFFERS),
 			SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(port->blocks),
 			SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(
-							1024 * port->stride,
+							MAX_SAMPLES * port->stride,
 							16 * port->stride,
 							MAX_SAMPLES * port->stride),
 			SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(port->stride),
@@ -751,7 +753,7 @@ impl_node_port_use_buffers(void *object,
 						this, j, i, d[j].type, d[j].data);
 				return -EINVAL;
 			}
-			if (!SPA_IS_ALIGNED(d[j].data, 16)) {
+			if (!SPA_IS_ALIGNED(d[j].data, MAX_ALIGN)) {
 				spa_log_warn(this->log, NAME " %p: memory %d on buffer %d not aligned",
 						this, j, i);
 			}
@@ -878,7 +880,7 @@ static int impl_node_process(void *object)
 			outio->status = -EPIPE;
           empty:
 			spa_log_trace_fp(this->log, NAME" %p: %d skip output", this, i);
-			dst_datas[n_dst_datas++] = SPA_PTR_ALIGN(this->empty, 16, void);
+			dst_datas[n_dst_datas++] = SPA_PTR_ALIGN(this->empty, MAX_ALIGN, void);
 			continue;
 		}
 
@@ -902,7 +904,7 @@ static int impl_node_process(void *object)
 	}
 	while (n_dst_datas < this->port_count) {
 		spa_log_trace_fp(this->log, NAME" %p: %d fill output", this, n_dst_datas);
-		dst_datas[n_dst_datas++] = SPA_PTR_ALIGN(this->empty, 16, void);
+		dst_datas[n_dst_datas++] = SPA_PTR_ALIGN(this->empty, MAX_ALIGN, void);
 	}
 
 	spa_log_trace_fp(this->log, NAME " %p: n_src:%d n_dst:%d n_samples:%d max:%d stride:%d p:%d", this,

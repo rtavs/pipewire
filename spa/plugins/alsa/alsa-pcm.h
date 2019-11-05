@@ -34,6 +34,7 @@ extern "C" {
 
 #include <alsa/asoundlib.h>
 
+#include <spa/support/plugin.h>
 #include <spa/support/loop.h>
 #include <spa/support/log.h>
 #include <spa/utils/list.h>
@@ -43,6 +44,9 @@ extern "C" {
 #include <spa/node/io.h>
 #include <spa/param/param.h>
 #include <spa/param/audio/format-utils.h>
+
+#define MIN_LATENCY	16
+#define MAX_LATENCY	8192
 
 #define DEFAULT_RATE		48000u
 #define DEFAULT_CHANNELS	2u
