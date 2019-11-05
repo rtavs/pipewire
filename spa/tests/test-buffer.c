@@ -51,8 +51,7 @@ static void test_abi(void)
 	spa_assert(SPA_META_LAST == 7);
 
 	spa_assert(sizeof(struct spa_meta) == 16);
-	fprintf(stderr, "%zd", sizeof(struct spa_meta_header));
-	spa_assert(sizeof(struct spa_meta_header) == 32);
+	spa_assert(sizeof(struct spa_meta_header) == 24);
 	spa_assert(sizeof(struct spa_meta_region) == 16);
 	spa_assert(sizeof(struct spa_meta_bitmap) == 20);
 	spa_assert(sizeof(struct spa_meta_cursor) == 28);

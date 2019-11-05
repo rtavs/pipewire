@@ -32,7 +32,6 @@
 #include <pthread.h>
 #include <poll.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/log-impl.h>
 #include <spa/support/loop.h>
 #include <spa/node/node.h>
@@ -42,7 +41,6 @@
 #include <spa/param/props.h>
 #include <spa/param/audio/format-utils.h>
 #include <spa/utils/names.h>
-#include <spa/utils/result.h>
 
 #define M_PI_M2 ( M_PI + M_PI )
 

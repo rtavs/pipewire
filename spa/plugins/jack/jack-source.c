@@ -31,7 +31,6 @@
 
 #include <jack/jack.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/log.h>
 #include <spa/support/loop.h>
 #include <spa/utils/list.h>
@@ -50,7 +49,7 @@
 
 #define MAX_PORTS 128
 #define MAX_BUFFERS 8
-#define MAX_SAMPLES 8192
+#define MAX_SAMPLES 1024
 
 struct buffer {
 	uint32_t id;
@@ -486,7 +485,7 @@ impl_node_remove_port(void *object, enum spa_direction direction, uint32_t port_
 	return -ENOTSUP;
 }
 
-static int port_enum_formats(struct impl *this,
+static int port_enum_formats(void *object,
 			     enum spa_direction direction, uint32_t port_id,
 			     uint32_t index,
 			     const struct spa_pod *filter,
@@ -500,7 +499,6 @@ static int port_enum_formats(struct impl *this,
 			SPA_FORMAT_mediaType,       SPA_POD_Id(SPA_MEDIA_TYPE_audio),
 			SPA_FORMAT_mediaSubtype,    SPA_POD_Id(SPA_MEDIA_SUBTYPE_raw),
 			SPA_FORMAT_AUDIO_format,    SPA_POD_Id(SPA_AUDIO_FORMAT_F32P),
-			SPA_FORMAT_AUDIO_rate,      SPA_POD_Int(this->client->frame_rate),
 			SPA_FORMAT_AUDIO_channels,  SPA_POD_Int(1));
 		break;
 	default:
@@ -566,7 +564,7 @@ impl_node_port_enum_params(void *object, int seq,
 			SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(2, 1, MAX_BUFFERS),
 			SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(1),
 			SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(
-							MAX_SAMPLES * port->stride,
+							1024 * port->stride,
 							16 * port->stride,
 							MAX_SAMPLES * port->stride),
 			SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(port->stride),

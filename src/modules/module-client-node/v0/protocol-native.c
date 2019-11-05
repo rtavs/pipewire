@@ -496,10 +496,9 @@ static const struct pw_protocol_marshal pw_protocol_native_client_node_marshal =
 	PW_VERSION_CLIENT_NODE0,
 	PW_CLIENT_NODE0_PROXY_METHOD_NUM,
 	PW_CLIENT_NODE0_PROXY_EVENT_NUM,
-	0,
 	NULL,
-	.server_demarshal = &pw_protocol_native_client_node_method_demarshal,
-	.server_marshal = &pw_protocol_native_client_node_event_marshal,
+	&pw_protocol_native_client_node_method_demarshal,
+	&pw_protocol_native_client_node_event_marshal,
 	NULL,
 };
 

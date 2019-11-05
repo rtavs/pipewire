@@ -73,6 +73,19 @@ struct spa_fraction {
 	uint32_t denom;
 };
 
+struct spa_param_info {
+	uint32_t id;
+#define SPA_PARAM_INFO_SERIAL		(1<<0)	/**< bit to signal update even when the
+						 *   read/write flags don't change */
+#define SPA_PARAM_INFO_READ		(1<<1)
+#define SPA_PARAM_INFO_WRITE		(1<<2)
+#define SPA_PARAM_INFO_READWRITE	(SPA_PARAM_INFO_WRITE|SPA_PARAM_INFO_READ)
+	uint32_t flags;
+	uint32_t padding[6];
+};
+
+#define SPA_PARAM_INFO(id,flags) (struct spa_param_info){ (id), (flags) }
+
 #define SPA_N_ELEMENTS(arr)  (sizeof(arr) / sizeof((arr)[0]))
 
 #define SPA_MIN(a,b)		\
@@ -222,6 +235,14 @@ struct spa_fraction {
 
 #define spa_memzero(x,l) (memset((x), 0, (l)))
 #define spa_zero(x) (spa_memzero(&(x), sizeof(x)))
+
+#define spa_strerror(err)		\
+({					\
+	int _err = -err;		\
+	if (SPA_RESULT_IS_ASYNC(err))	\
+		_err = EINPROGRESS;	\
+	strerror(_err);			\
+})
 
 #ifdef SPA_DEBUG_MEMCPY
 #define spa_memcpy(d,s,n)						\

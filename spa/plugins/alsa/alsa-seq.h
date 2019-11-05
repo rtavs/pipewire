@@ -34,7 +34,6 @@ extern "C" {
 
 #include <alsa/asoundlib.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/loop.h>
 #include <spa/support/log.h>
 #include <spa/utils/list.h>
@@ -47,6 +46,8 @@ extern "C" {
 
 struct props {
 	char device[64];
+	uint32_t min_latency;
+	uint32_t max_latency;
 };
 
 #define MAX_EVENT_SIZE 1024

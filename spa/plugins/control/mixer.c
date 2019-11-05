@@ -26,7 +26,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/log.h>
 #include <spa/support/cpu.h>
 #include <spa/utils/list.h>

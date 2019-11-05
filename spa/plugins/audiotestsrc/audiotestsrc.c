@@ -28,7 +28,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/log.h>
 #include <spa/support/system.h>
 #include <spa/support/loop.h>
@@ -73,9 +72,8 @@ static void reset_props(struct props *props)
 	props->volume = DEFAULT_VOLUME;
 }
 
-#define MAX_SAMPLES	8192
-#define MAX_BUFFERS	16
-#define MAX_PORTS	1
+#define MAX_BUFFERS 16
+#define MAX_PORTS 1
 
 struct buffer {
 	uint32_t id;
@@ -602,9 +600,9 @@ impl_node_port_enum_params(void *object, int seq,
 			SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(1, 1, MAX_BUFFERS),
 			SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(1),
 			SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(
-							MAX_SAMPLES * port->bpf,
+							1024 * port->bpf,
 							16 * port->bpf,
-							INT32_MAX),
+							INT32_MAX / port->bpf),
 			SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(0),
 			SPA_PARAM_BUFFERS_align,   SPA_POD_Int(16));
 		break;

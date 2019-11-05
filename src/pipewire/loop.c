@@ -26,7 +26,6 @@
 
 #include <spa/support/loop.h>
 #include <spa/utils/names.h>
-#include <spa/utils/result.h>
 
 #include <pipewire/pipewire.h>
 #include <pipewire/loop.h>

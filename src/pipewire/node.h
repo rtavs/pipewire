@@ -43,7 +43,6 @@ extern "C" {
  */
 struct pw_node;
 
-#include <spa/node/node.h>
 #include <spa/node/event.h>
 
 #include <pipewire/core.h>

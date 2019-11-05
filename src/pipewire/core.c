@@ -529,7 +529,7 @@ struct pw_core *pw_core_new(struct pw_loop *main_loop,
 	this->support[n_support++] = SPA_SUPPORT_INIT(SPA_TYPE_INTERFACE_DataLoop, this->data_loop->loop);
 
 	if ((cpu = spa_support_find(this->support, n_support, SPA_TYPE_INTERFACE_CPU)) != NULL)
-		pw_properties_setf(properties, PW_KEY_CPU_MAX_ALIGN, "%u", spa_cpu_get_max_align(cpu));
+		pw_properties_setf(properties, "cpu.max-align", "%u", spa_cpu_get_max_align(cpu));
 
 	lib = pw_properties_get(properties, PW_KEY_LIBRARY_NAME_DBUS);
 	if (lib == NULL)
@@ -1080,9 +1080,7 @@ static int collect_nodes(struct pw_node *driver)
 	struct pw_node *n, *t;
 	struct pw_port *p;
 	struct pw_link *l;
-	uint32_t max_quantum = 0;
-	uint32_t min_quantum = 0;
-	uint32_t quantum;
+	uint32_t quantum = DEFAULT_QUANTUM;
 
 	spa_list_consume(t, &driver->slave_list, slave_link) {
 		spa_list_remove(&t->slave_link);
@@ -1099,12 +1097,8 @@ static int collect_nodes(struct pw_node *driver)
 		spa_list_remove(&n->sort_link);
 		pw_node_set_driver(n, driver);
 
-		if (n->quantum_size > 0) {
-			if (min_quantum == 0 || n->quantum_size < min_quantum)
-				min_quantum = n->quantum_size;
-			if (n->quantum_size > max_quantum)
-				max_quantum = n->quantum_size;
-		}
+		if (n->quantum_size > 0 && n->quantum_size < quantum)
+			quantum = n->quantum_size;
 
 		spa_list_for_each(p, &n->input_ports, link) {
 			spa_list_for_each(l, &p->links, input_link) {
@@ -1125,14 +1119,7 @@ static int collect_nodes(struct pw_node *driver)
 			}
 		}
 	}
-
-	quantum = min_quantum;
-	if (quantum == 0)
-		quantum = DEFAULT_QUANTUM;
-
-	/* for now, we try to limit the latency between min and default, We can
-	 * go to max but we should really only do this when in power save mode */
-	driver->quantum_current = SPA_CLAMP(quantum, MIN_QUANTUM, DEFAULT_QUANTUM);
+	driver->quantum_current = SPA_MAX(quantum, MIN_QUANTUM);
 
 	return 0;
 }

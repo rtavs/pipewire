@@ -26,7 +26,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/log.h>
 #include <spa/support/cpu.h>
 #include <spa/utils/list.h>
@@ -46,7 +45,6 @@
 #define DEFAULT_RATE		44100
 #define DEFAULT_CHANNELS	2
 
-#define MAX_SAMPLES	8192
 #define MAX_BUFFERS	32
 #define MAX_DATAS	32
 
@@ -571,7 +569,7 @@ impl_node_port_enum_params(void *object, int seq,
 			size = other->size / other->stride;
 		} else {
 			buffers = 1;
-			size = MAX_SAMPLES;
+			size = port->format.info.raw.rate * 1024 / DEFAULT_RATE;
 		}
 
 		param = spa_pod_builder_add_object(&b,
@@ -581,7 +579,7 @@ impl_node_port_enum_params(void *object, int seq,
 			SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(
 							size * port->stride,
 							16 * port->stride,
-							INT32_MAX),
+							INT32_MAX / port->stride),
 			SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(port->stride),
 			SPA_PARAM_BUFFERS_align,   SPA_POD_Int(16));
 		break;

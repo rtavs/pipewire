@@ -29,8 +29,6 @@
 
 #include "config.h"
 
-#include <spa/utils/result.h>
-
 #include <pipewire/pipewire.h>
 
 #include "module-client-node/v0/client-node.h"

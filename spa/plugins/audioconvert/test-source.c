@@ -26,7 +26,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/log.h>
 #include <spa/support/cpu.h>
 #include <spa/utils/list.h>
@@ -44,7 +43,6 @@
 #define DEFAULT_RATE		44100
 #define DEFAULT_CHANNELS	2
 
-#define MAX_SAMPLES	8192
 #define MAX_BUFFERS	32
 
 struct impl;
@@ -455,9 +453,9 @@ impl_node_port_enum_params(void *object, int seq,
 			SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(2, 1, MAX_BUFFERS),
 			SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(port->blocks),
 			SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(
-							MAX_SAMPLES * port->stride,
+							1024 * port->stride,
 							16 * port->stride,
-							INT32_MAX),
+							INT32_MAX / port->stride),
 			SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(port->stride),
 			SPA_PARAM_BUFFERS_align,   SPA_POD_Int(16));
 		break;

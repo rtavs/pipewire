@@ -215,7 +215,6 @@ struct pw_remote *pw_remote_new(struct pw_core *core,
 	pw_map_init(&this->objects, 64, 32);
 
 	spa_list_init(&this->stream_list);
-	spa_list_init(&this->filter_list);
 
 	spa_hook_list_init(&this->listener_list);
 
@@ -242,7 +241,6 @@ struct pw_remote *pw_remote_new(struct pw_core *core,
 	pw_module_load(core, "libpipewire-module-rtkit", NULL, NULL);
 	pw_module_load(core, "libpipewire-module-client-node", NULL, NULL);
 	pw_module_load(core, "libpipewire-module-adapter", NULL, NULL);
-	pw_module_load(core, "libpipewire-module-metadata", NULL, NULL);
 
         spa_list_append(&core->remote_list, &this->link);
 
@@ -274,7 +272,6 @@ void pw_remote_destroy(struct pw_remote *remote)
 {
 	struct remote *impl = SPA_CONTAINER_OF(remote, struct remote, this);
 	struct pw_stream *stream;
-	struct pw_filter *filter;
 
 	pw_log_debug(NAME" %p: destroy", remote);
 	pw_remote_emit_destroy(remote);
@@ -284,8 +281,6 @@ void pw_remote_destroy(struct pw_remote *remote)
 
 	spa_list_consume(stream, &remote->stream_list, link)
 		pw_stream_destroy(stream);
-	spa_list_consume(filter, &remote->filter_list, link)
-		pw_filter_destroy(filter);
 
 	pw_protocol_client_destroy(remote->conn);
 

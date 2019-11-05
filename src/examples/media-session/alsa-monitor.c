@@ -110,7 +110,7 @@ static struct alsa_node *alsa_create_node(struct alsa_object *obj, uint32_t id,
 	struct monitor *monitor = obj->monitor;
 	struct impl *impl = monitor->impl;
 	int res;
-	const char *dev, *subdev, *stream;
+	const char *dev, *subdev;
 	int priority;
 
 	pw_log_debug("new node %u", id);
@@ -136,8 +136,6 @@ static struct alsa_node *alsa_create_node(struct alsa_object *obj, uint32_t id,
 		dev = "0";
 	if ((subdev = pw_properties_get(node->props, SPA_KEY_API_ALSA_PCM_SUBDEVICE)) == NULL)
 		subdev = "0";
-	if ((stream = pw_properties_get(node->props, SPA_KEY_API_ALSA_PCM_STREAM)) == NULL)
-		stream = "unknown";
 
 	if (obj->first) {
 		if (atol(dev) != 0)
@@ -146,8 +144,6 @@ static struct alsa_node *alsa_create_node(struct alsa_object *obj, uint32_t id,
 	}
 
 	priority = obj->priority;
-	if (!strcmp(stream, "capture"))
-		priority += 1000;
 	priority -= atol(dev) * 16;
 	priority -= atol(subdev);
 
@@ -157,9 +153,12 @@ static struct alsa_node *alsa_create_node(struct alsa_object *obj, uint32_t id,
 	}
 
 	if (pw_properties_get(node->props, SPA_KEY_NODE_NAME) == NULL) {
-		const char *devname;
+		const char *devname, *stream;
 		if ((devname = pw_properties_get(obj->props, SPA_KEY_DEVICE_NAME)) == NULL)
 			devname = "unknown";
+		if ((stream = pw_properties_get(node->props, SPA_KEY_API_ALSA_PCM_STREAM)) == NULL)
+			stream = "unknown";
+
 		pw_properties_setf(node->props, SPA_KEY_NODE_NAME, "%s.%s.%s.%s",
 				devname, stream, dev, subdev);
 	}

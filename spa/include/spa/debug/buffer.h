@@ -57,8 +57,7 @@ static inline int spa_debug_buffer(int indent, const struct spa_buffer *buffer)
 			struct spa_meta_header *h = (struct spa_meta_header*)m->data;
 			spa_debug("%*s" "    struct spa_meta_header:", indent, "");
 			spa_debug("%*s" "      flags:      %08x", indent, "", h->flags);
-			spa_debug("%*s" "      offset:     %u", indent, "", h->offset);
-			spa_debug("%*s" "      seq:        %" PRIu64, indent, "", h->seq);
+			spa_debug("%*s" "      seq:        %u", indent, "", h->seq);
 			spa_debug("%*s" "      pts:        %" PRIi64, indent, "", h->pts);
 			spa_debug("%*s" "      dts_offset: %" PRIi64, indent, "", h->dts_offset);
 			break;
@@ -76,7 +75,7 @@ static inline int spa_debug_buffer(int indent, const struct spa_buffer *buffer)
 		case SPA_META_VideoDamage:
 		{
 			struct spa_meta_region *h;
-			spa_meta_for_each(h, m) {
+			spa_meta_region_for_each(h, m) {
 				spa_debug("%*s" "    struct spa_meta_region:", indent, "");
 				spa_debug("%*s" "      x:      %d", indent, "", h->region.position.x);
 				spa_debug("%*s" "      y:      %d", indent, "", h->region.position.y);

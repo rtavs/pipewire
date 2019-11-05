@@ -28,14 +28,12 @@
 #include <arpa/inet.h>
 #include <sys/ioctl.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/loop.h>
 #include <spa/support/log.h>
 #include <spa/support/system.h>
 #include <spa/utils/list.h>
 #include <spa/utils/keys.h>
 #include <spa/utils/names.h>
-#include <spa/utils/result.h>
 #include <spa/monitor/device.h>
 
 #include <spa/node/node.h>
@@ -153,8 +151,8 @@ struct impl {
 
 #define CHECK_PORT(this,d,p)    ((d) == SPA_DIRECTION_INPUT && (p) == 0)
 
-static const uint32_t default_min_latency = MIN_LATENCY;
-static const uint32_t default_max_latency = MAX_LATENCY;
+static const uint32_t default_min_latency = 128;
+static const uint32_t default_max_latency = 1024;
 
 static void reset_props(struct props *props)
 {

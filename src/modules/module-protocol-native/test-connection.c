@@ -24,9 +24,7 @@
 
 #include <sys/socket.h>
 
-#include <spa/pod/builder.h>
 #include <spa/pod/parser.h>
-#include <spa/utils/result.h>
 
 #include <pipewire/pipewire.h>
 

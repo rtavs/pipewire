@@ -26,8 +26,6 @@
 #include <errno.h>
 #include <sys/time.h>
 
-#include <spa/utils/result.h>
-
 #include "log.h"
 #include "thread-loop.h"
 

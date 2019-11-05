@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <limits.h>
 
-#include <spa/support/plugin.h>
 #include <spa/support/log.h>
 #include <spa/support/cpu.h>
 #include <spa/utils/list.h>
@@ -48,9 +47,7 @@
 #define DEFAULT_RATE		48000
 #define DEFAULT_CHANNELS	2
 
-#define MAX_SAMPLES	8192
 #define MAX_BUFFERS	64
-#define MAX_ALIGN	16
 #define MAX_DATAS	32
 #define MAX_PORTS	128
 
@@ -476,9 +473,9 @@ impl_node_port_enum_params(void *object, int seq,
 				SPA_PARAM_BUFFERS_buffers, SPA_POD_CHOICE_RANGE_Int(1, 1, MAX_BUFFERS),
 				SPA_PARAM_BUFFERS_blocks,  SPA_POD_Int(port->blocks),
 				SPA_PARAM_BUFFERS_size,    SPA_POD_CHOICE_RANGE_Int(
-								MAX_SAMPLES * 2 * port->stride,
+								2048 * port->stride,
 								16 * port->stride,
-								INT32_MAX),
+								INT32_MAX / port->stride),
 				SPA_PARAM_BUFFERS_stride,  SPA_POD_Int(port->stride),
 				SPA_PARAM_BUFFERS_align,   SPA_POD_Int(16));
 		}
@@ -701,7 +698,7 @@ impl_node_port_use_buffers(void *object,
 						this, j, i);
 				return -EINVAL;
 			}
-			if (!SPA_IS_ALIGNED(d[j].data, MAX_ALIGN)) {
+			if (!SPA_IS_ALIGNED(d[j].data, 16)) {
 				spa_log_warn(this->log, NAME " %p: memory %d on buffer %d not aligned",
 						this, j, i);
 			}

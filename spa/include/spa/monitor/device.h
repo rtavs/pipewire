@@ -30,26 +30,19 @@ extern "C" {
 #endif
 
 #include <spa/utils/defs.h>
-#include <spa/utils/hook.h>
 #include <spa/utils/dict.h>
+#include <spa/support/plugin.h>
+#include <spa/pod/builder.h>
 #include <spa/pod/event.h>
 
 /**
  * spa_device:
  *
- * The device interface can be used to monitor all kinds of devices
- * and create objects as a result. Objects a typically other
- * Devices or Nodes.
- *
+ * The device interface.
  */
 #define SPA_VERSION_DEVICE 0
 struct spa_device { struct spa_interface iface; };
 
-/**
- * Information about the device and parameters it supports
- *
- * This information is part of the info event on a device.
- */
 struct spa_device_info {
 #define SPA_VERSION_DEVICE_INFO 0
 	uint32_t version;
@@ -59,30 +52,25 @@ struct spa_device_info {
 #define SPA_DEVICE_CHANGE_MASK_PARAMS		(1u<<2)
 	uint64_t change_mask;
 	uint64_t flags;
-	const struct spa_dict *props;		/**< device properties */
-	struct spa_param_info *params;		/**< supported parameters */
-	uint32_t n_params;			/**< number of elements in params */
+	const struct spa_dict *props;
+	struct spa_param_info *params;
+	uint32_t n_params;
 };
 
 #define SPA_DEVICE_INFO_INIT()	(struct spa_device_info){ SPA_VERSION_DEVICE_INFO, }
 
-/**
- * Information about a device object
- *
- * This information is part of the object_info event on the device.
- */
 struct spa_device_object_info {
 #define SPA_VERSION_DEVICE_OBJECT_INFO 0
 	uint32_t version;
 
-	uint32_t type;				/**< the object type managed by this device */
-	const char *factory_name;		/**< a factory name that implements the object */
+	uint32_t type;
+	const char *factory_name;
 
 #define SPA_DEVICE_OBJECT_CHANGE_MASK_FLAGS	(1u<<0)
 #define SPA_DEVICE_OBJECT_CHANGE_MASK_PROPS	(1u<<1)
 	uint64_t change_mask;
 	uint64_t flags;
-	const struct spa_dict *props;		/**< extra object properties */
+	const struct spa_dict *props;
 };
 
 #define SPA_DEVICE_OBJECT_INFO_INIT()	(struct spa_device_object_info){ SPA_VERSION_DEVICE_OBJECT_INFO, }
@@ -147,7 +135,7 @@ struct spa_device_methods {
 	 * the device.
 	 *
 	 * Setting the events will trigger the info event and an
-	 * object_info event for each managed object on the new
+	 * object_info event for each managed node on the new
 	 * listener.
 	 *
 	 * \param device a #spa_device
